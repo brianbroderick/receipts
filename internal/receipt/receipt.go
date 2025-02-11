@@ -17,7 +17,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func Execute() {
+func Execute(user string) {
 	ctx := context.Background()
 	b, err := os.ReadFile(filepath.Join(projectpath.Root, "creds", "gmail-receipts-credentials.json"))
 	if err != nil {
@@ -36,7 +36,7 @@ func Execute() {
 		log.Fatalf("Unable to retrieve Gmail client: %v", err)
 	}
 
-	SearchEmail(srv, "sentral 1,000.60")
+	SearchEmail(user, srv, "sentral 1,000.60")
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
@@ -94,8 +94,9 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func ShowLabels(srv *gmail.Service) {
-	user := "me"
+func ShowLabels(user string, srv *gmail.Service) {
+	// user := "me"
+
 	r, err := srv.Users.Labels.List(user).Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve labels: %v", err)
@@ -110,9 +111,7 @@ func ShowLabels(srv *gmail.Service) {
 	}
 }
 
-func SearchEmail(srv *gmail.Service, query string) {
-	user := "me"
-
+func SearchEmail(user string, srv *gmail.Service, query string) {
 	r, err := srv.Users.Messages.List(user).Q(query).Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve messages: %v", err)
